@@ -4,7 +4,6 @@ class TwitchAPI():
 
     def __init__(self):
         self.headers = None
-        pass
 
     def auth(self, client_id, client_secret):
         headers = {
