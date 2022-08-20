@@ -9,5 +9,8 @@ class ClipDownloader():
         clip_url = thumb_url[:index] + '.mp4'
 
         r = requests.get(clip_url)
-        with open(f'{title}.mp4', 'wb') as f:
-            f.write(r.content)
+        if r.headers['Content-Type'] == 'binary/octet-stream':
+            with open(f'clips/{title}.mp4', 'wb') as f:
+                f.write(r.content)
+        else:
+            print(f'Failed to download clip from thumb: {thumb_url}')
