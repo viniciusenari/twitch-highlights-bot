@@ -1,4 +1,5 @@
 import requests
+import os
 
 class ClipDownloader():
     def __init__(self):
@@ -10,6 +11,7 @@ class ClipDownloader():
 
         r = requests.get(clip_url)
         if r.headers['Content-Type'] == 'binary/octet-stream':
+            if not os.path.exists('clips'): os.makedirs('clips')
             with open(f'clips/{title}.mp4', 'wb') as f:
                 f.write(r.content)
         else:
