@@ -153,3 +153,5 @@ cython_debug/
 
 # Youtube API
 client_secret.json
+
+clips
