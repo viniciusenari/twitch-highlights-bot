@@ -1,4 +1,5 @@
 import requests
+import os
 from twitch_api import TwitchAPI
 from utils import client_id, client_secret, games_id, prev_week_saturday, prev_week_sunday
 
@@ -41,3 +42,19 @@ class ClipsExtractor:
                                             title = clip['title'],
                                             thumbnail_url = clip['thumbnail_url'])
                 self.clips_content.append(clip_content)
+
+class ClipDownloader():
+    def __init__(self):
+        pass
+
+    def download_clip(self, thumb_url, title):
+        index = thumb_url.find('-preview')
+        clip_url = thumb_url[:index] + '.mp4'
+
+        r = requests.get(clip_url)
+        if r.headers['Content-Type'] == 'binary/octet-stream':
+            if not os.path.exists('clips'): os.makedirs('clips')
+            with open(f'clips/{title}.mp4', 'wb') as f:
+                f.write(r.content)
+        else:
+            print(f'Failed to download clip from thumb: {thumb_url}')
