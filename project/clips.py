@@ -22,18 +22,20 @@ class ClipsExtractor:
     def __init__(self):
         self.clips_content = []
 
-    def get_clips(self, quantity, broadcaster_id = None, game_id = None, languages = []):
+    def get_clips(self, quantity = 10, broadcaster_id = None, game_id = None, languages = []):
         params = {
             'broadcaster_id' : broadcaster_id,
             'game_id' : game_id,
-            'first' : quantity,
+            'first' : 100,
             'started_at' : prev_week_sunday,
             'ended_at' : prev_week_saturday
         }
 
         response = requests.get('https://api.twitch.tv/helix/clips', params=params, headers=api.headers)
 
-        for clip in response.json()['data']:
+        index = 0
+        while len(self.clips_content) <= quantity or index < len(response.json()['data']):
+            clip = response.json()['data'][index]
             if languages == [] or clip['language'] in languages:
                 clip_content = ClipContent(url = clip['url'],
                                             broadcaster_id = clip['broadcaster_id'],
@@ -42,6 +44,7 @@ class ClipsExtractor:
                                             title = clip['title'],
                                             thumbnail_url = clip['thumbnail_url'])
                 self.clips_content.append(clip_content)
+            index += 1
 
 class ClipDownloader():
     def __init__(self):
@@ -58,3 +61,10 @@ class ClipDownloader():
                 f.write(r.content)
         else:
             print(f'Failed to download clip from thumb: {thumb_url}')
+    
+    def download_top_clips(self, quantity, broadcaster_id = None, game_id = None, languages = []):
+        clips_extractor = ClipsExtractor()
+        clips_extractor.get_clips(quantity, broadcaster_id, game_id, languages)
+        for i in range(quantity):
+            clip = clips_extractor.clips_content[i]
+            self.download_clip(clip.thumbnail_url, clip.title.replace(' ', '_').lower())
