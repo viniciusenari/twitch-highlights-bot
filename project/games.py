@@ -9,7 +9,6 @@ class GetTopGames():
     def __init__(self):
         pass
 
-
     def get_top_games(self):
         params = {
             'first' : 100
@@ -20,7 +19,7 @@ class GetTopGames():
         response = requests.get('https://api.twitch.tv/helix/games/top', params=params, headers=api.headers)
         for game in response.json()['data']:
             games_id[game['name']] = game['id']
-            games_box_art_url[game['name']] = game['box_art_url']
+            games_box_art_url[game['name']] = game['box_art_url'].replace('{width}', '285').replace('{height}', '380')
         
         return games_id, games_box_art_url
 
