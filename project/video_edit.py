@@ -2,7 +2,7 @@ import os
 from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip
 from PIL import Image, ImageDraw, ImageFont
 from clips import ClipsExtractor
-from utils import games_id
+from games import games_id
 
 clips_extractor = ClipsExtractor()
 clips_extractor.get_clips(quantity = 10, game_id = games_id['VALORANT'], languages = ['en', 'en-gb'])
