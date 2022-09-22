@@ -1,15 +1,17 @@
 import os
-from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip
+from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips
 from PIL import Image, ImageDraw, ImageFont
 from clips import ClipsExtractor
 from games import games_id
 
 clips_extractor = ClipsExtractor()
 clips_extractor.get_clips(quantity = 10, game_id = games_id['VALORANT'], languages = ['en', 'en-gb'])
+for clip in clips_extractor.clips_content:
+    print(clip.title)
  
 class VideoEditor():
     def __init__(self):
-        pass
+        self.clips = []
 
     def create_intro(self):
         pass
@@ -30,17 +32,21 @@ class VideoEditor():
         d.text((100, 1000), broadcaster_name, font=fnt_streamer_name, stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
         
         if not os.path.exists('files/overlays'): os.makedirs('files/overlays')
-        overlay.save('files/overlays/my_picture.png')
+        overlay.save(f'files/overlays/{clip_content.title}.png')
     
-    def create_video(self):
-        clip = VideoFileClip("files/clips/hasan_tries_to_communicate_with_his_team.mp4")
-        img_clip = ImageClip("files/overlays/my_picture.png").set_duration(5)
-
-        # Overlay the text clip on the first video clip
+    def create_video(self, clip_content):
+        clip = VideoFileClip(clip_content.path)
+        img_clip = ImageClip(f'files/overlays/{clip_content.title}.png').set_duration(5)
         video = CompositeVideoClip([clip, img_clip])
+        return video
 
+    def create_video_compilation(self, clips, amount):
+        for clip in clips[:amount]:
+            self.create_overlay(clip)
+            self.clips.append(self.create_video(clip))
+            
+        video = concatenate_videoclips(self.clips)
         video.write_videofile(f'video.mp4', fps = 60, codec = "mpeg4", threads = 1, preset = "ultrafast", bitrate = "16000k")
 
 video_editor = VideoEditor()
-video_editor.create_overlay(clips_extractor.clips_content[0])
-video_editor.create_video()
+video_editor.create_video_compilation(clips_extractor.clips_content, 10)
