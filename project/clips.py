@@ -1,24 +1,26 @@
 import requests
 import os
 from twitch_api import TwitchAPI
-from utils import client_id, client_secret, games_id, prev_week_saturday, prev_week_sunday
+from utils import client_id, client_secret, prev_week_saturday, prev_week_sunday
+from games import games_id
 
 api = TwitchAPI()
 api.auth(client_id, client_secret)
 
 class ClipContent:
-    def __init__(self, url, broadcaster_id, game_id, creator_name, title, thumbnail_url, views):
+    def __init__(self, url, broadcaster_id, broadcaster_name, game_id, creator_name, title, thumbnail_url, views, path):
         self.url = url
         self.broadcaster_id = broadcaster_id
+        self.broadcaster_name = broadcaster_name
         self.game_id = game_id
         self.creator_name = creator_name
         self.title = title
         self.thumbnail_url = thumbnail_url
         self.views = views
-        self.path = None
+        self.path = path
     
     def __str__(self):
-        return f'url: {self.url}\nbroadcaster_id: {self.broadcaster_id}\ncreator_name: {self.creator_name}\ntitle: {self.title}\nthumbnail_url: {self.thumbnail_url}'
+        return f'url: {self.url}\nbroadcaster_id: {self.broadcaster_id}\nbroadcaster_name: {self.broadcaster_name}\ncreator_name: {self.creator_name}\ntitle: {self.title}\nthumbnail_url: {self.thumbnail_url}'
 
 class ClipsExtractor:
     def __init__(self):
@@ -28,26 +30,29 @@ class ClipsExtractor:
         params = {
             'broadcaster_id' : broadcaster_id,
             'game_id' : game_id,
-            'first' : 100,
+            'first' : quantity,
             'started_at' : prev_week_sunday,
-            'ended_at' : prev_week_saturday
+            'ended_at' : prev_week_saturday,
+            'after' : None
         }
 
-        response = requests.get('https://api.twitch.tv/helix/clips', params=params, headers=api.headers)
-        print(response.json())
-        index = 0
-        while len(self.clips_content) <= quantity or index < len(response.json()['data']):
-            clip = response.json()['data'][index]
-            if languages == [] or clip['language'] in languages:
-                clip_content = ClipContent(url = clip['url'],
-                                            broadcaster_id = clip['broadcaster_id'],
-                                            game_id = clip['game_id'],
-                                            creator_name = clip['creator_name'],
-                                            title = clip['title'],
-                                            thumbnail_url = clip['thumbnail_url'],
-                                            views = clip['view_count'])
-                self.clips_content.append(clip_content)
-            index += 1
+        while len(self.clips_content) < quantity:
+            response = requests.get('https://api.twitch.tv/helix/clips', params=params, headers=api.headers).json()
+            for clip in response['data']:
+                if clip['language'] in languages:
+                    print(clip['language'])
+                    self.clips_content.append(ClipContent(
+                        clip['url'],
+                        clip['broadcaster_id'],
+                        clip['broadcaster_name'],
+                        clip['game_id'],
+                        clip['creator_name'],
+                        clip['title'],
+                        clip['thumbnail_url'],
+                        clip['view_count'],
+                        f'files/clips/{clip["title"].replace(" ", "_").lower()}.mp4'
+                    ))
+            params['after'] = response['pagination']['cursor']
 
 class ClipDownloader():
     def __init__(self):
@@ -55,15 +60,13 @@ class ClipDownloader():
 
     def download_clip(self, clip):
         index = clip.thumbnail_url.find('-preview')
-        clip_url = clip.thumbnail_ur[:index] + '.mp4'
-        title = clip.title.replace(' ', '_').lower()
+        clip_url = clip.thumbnail_url[:index] + '.mp4'
 
         r = requests.get(clip_url)
         if r.headers['Content-Type'] == 'binary/octet-stream':
-            if not os.path.exists('clips'): os.makedirs('clips')
-            with open(f'clips/{title}.mp4', 'wb') as f:
+            if not os.path.exists('files/clips'): os.makedirs('files/clips')
+            with open(clip.path, 'wb') as f:
                 f.write(r.content)
-                clip.path = f'clips/{title}.mp4'
         else:
             print(f'Failed to download clip from thumb: {clip.thumbnail_url}')
     
@@ -71,5 +74,6 @@ class ClipDownloader():
         clips_extractor = ClipsExtractor()
         clips_extractor.get_clips(quantity, broadcaster_id, game_id, languages)
         for i in range(quantity):
+            print(f'Downloading clip {i+1}/{quantity}')
             clip = clips_extractor.clips_content[i]
             self.download_clip(clip)
