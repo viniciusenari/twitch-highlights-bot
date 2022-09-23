@@ -26,13 +26,13 @@ def main():
     # *DO NOT* leave this option enabled in production.
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-    api_service_name = "youtube"
-    api_version = "v3"
-    client_secrets_file = "client_secret.json"
+    api_service_name = "youtube"                          # ------------------------------
+    api_version = "v3"                                     # ------------------------------
+    client_secrets_file = "client_secret.json"               # ------------------------------
 
     # Get credentials and create an API client
     flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        client_secrets_file, scopes)
+        client_secrets_file, scopes)                                                    # ------------------------------
     credentials = flow.run_console()
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, credentials=credentials)
@@ -42,7 +42,7 @@ def main():
           "snippet": {
             "categoryId": "22",
             "description": "Description of uploaded video.",
-            "title": "Test video upload."
+            "title": "Test video upload. (mp4)"
           },
         
           "status": {
@@ -53,7 +53,7 @@ def main():
         
         # TODO: For this request to work, you must replace "YOUR_FILE"
         #       with a pointer to the actual file you are uploading.
-        media_body=MediaFileUpload("clips/video.mp4")
+        media_body=MediaFileUpload("video.mp4")
     )
     response = request.execute()
 
@@ -61,3 +61,22 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+class YoutubeUploader:
+    def __init__(self):
+
+        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+
+        self.api_service_name = "youtube"
+        self.api_version = "v3"
+        self.client_secrets_file = "client_secret.json"
+
+    def get_authenticated_service(self):
+        flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(self.client_secrets_file, scopes)
+        credentials = flow.run_console()
+        youtube = googleapiclient.discovery.build(self.api_service_name, self.api_version, credentials=credentials)
+
+    def upload_video(self, clip):
+        pass
