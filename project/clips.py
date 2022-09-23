@@ -39,8 +39,7 @@ class ClipsExtractor:
         while len(self.clips_content) < quantity:
             response = requests.get('https://api.twitch.tv/helix/clips', params=params, headers=api.headers).json()
             for clip in response['data']:
-                if clip['language'] in languages:
-                    print(clip['language'])
+                if clip['language'] in languages or languages == []:
                     self.clips_content.append(ClipContent(
                         clip['url'],
                         clip['broadcaster_id'],
