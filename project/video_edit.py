@@ -3,12 +3,8 @@ from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, concate
 from PIL import Image, ImageDraw, ImageFont
 from clips import ClipsExtractor
 from games import games_id
+from config import font_clip_name, font_broadcaster
 
-clips_extractor = ClipsExtractor()
-clips_extractor.get_clips(quantity = 10, game_id = games_id['VALORANT'], languages = ['en', 'en-gb'])
-for clip in clips_extractor.clips_content:
-    print(clip.title)
- 
 class VideoEditor():
     def __init__(self):
         self.clips = []
@@ -24,8 +20,8 @@ class VideoEditor():
         # Create a 1980x1080 transparent image
         overlay = Image.new('RGBA', (1920, 1080), color = (255,255,255,0))
  
-        fnt_clip_name = ImageFont.truetype("usr/share/fonts/truetype/noto/DejaVuSans-Bold.ttf", 62)
-        fnt_streamer_name = ImageFont.truetype("usr/share/fonts/truetype/noto/NotoMono-Regular.ttf", 50)
+        fnt_clip_name = ImageFont.truetype(font_clip_name, 62)
+        fnt_streamer_name = ImageFont.truetype(font_broadcaster, 50)
         d = ImageDraw.Draw(overlay)
 
         d.text((100, 930), title, font=fnt_clip_name, stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
@@ -45,8 +41,5 @@ class VideoEditor():
             self.create_overlay(clip)
             self.clips.append(self.create_video(clip))
             
-        video = concatenate_videoclips(self.clips)
-        video.write_videofile(f'video.mp4', fps = 60, codec = "mpeg4", threads = 1, preset = "ultrafast", bitrate = "16000k")
-
-video_editor = VideoEditor()
-video_editor.create_video_compilation(clips_extractor.clips_content, 10)
+        video = concatenate_videoclips(self.clips, method='compose')
+        video.write_videofile(f'videocsgo.mp4', fps = 60, codec = "mpeg4", threads = 8, preset = "ultrafast", logger = 'bar', bitrate = '20000k')
