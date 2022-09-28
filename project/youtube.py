@@ -1,72 +1,28 @@
-# -*- coding: utf-8 -*-
-
-# Sample Python code for youtube.videos.insert
-# NOTES:
-# 1. This sample code uploads a file and can't be executed via this interface.
-#    To test this code, you must run it locally using your own API credentials.
-#    See: https://developers.google.com/explorer-help/code-samples#python
-# 2. This example makes a simple upload request. We recommend that you consider
-#    using resumable uploads instead, particularly if you are transferring large
-#    files or there's a high likelihood of a network interruption or other
-#    transmission failure. To learn more about resumable uploads, see:
-#    https://developers.google.com/api-client-library/python/guide/media_upload
-
 import os
+import random
+import time
 
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
-import googleapiclient.errors
+from googleapiclient.errors import HttpError
 
 from googleapiclient.http import MediaFileUpload
 
 scopes = ["https://www.googleapis.com/auth/youtube.upload"]
 
-def main():
-    # Disable OAuthlib's HTTPS verification when running locally.
-    # *DO NOT* leave this option enabled in production.
-    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-    api_service_name = "youtube"                          # ------------------------------
-    api_version = "v3"                                     # ------------------------------
-    client_secrets_file = "client_secret.json"               # ------------------------------
+class VideoContent:
 
-    # Get credentials and create an API client
-    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        client_secrets_file, scopes)                                                    # ------------------------------
-    credentials = flow.run_console()
-    youtube = googleapiclient.discovery.build(
-        api_service_name, api_version, credentials=credentials)
-
-    request = youtube.videos().insert(
-        body={
-          "snippet": {
-            "categoryId": "22",
-            "description": "Description of uploaded video.",
-            "title": "Test video upload. (mp4)"
-          },
-        
-          "status": {
-            "privacyStatus": "private"
-          }
-        },
-        part = "snippet,status",
-        
-        # TODO: For this request to work, you must replace "YOUR_FILE"
-        #       with a pointer to the actual file you are uploading.
-        media_body=MediaFileUpload("video.mp4")
-    )
-    response = request.execute()
-
-    print(response)
-
-if __name__ == "__main__":
-    main()
-
-
+    def __init__(self, title, description, tags, privacy_status):
+        self.title = None
+        self.description = None
+        self.tags = None
+        self.category_id = None
+        self.privacy_status = None
 
 class YoutubeUploader:
-    def __init__(self):
 
+    def __init__(self):
         os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
         self.api_service_name = "youtube"
@@ -76,7 +32,67 @@ class YoutubeUploader:
     def get_authenticated_service(self):
         flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(self.client_secrets_file, scopes)
         credentials = flow.run_console()
-        youtube = googleapiclient.discovery.build(self.api_service_name, self.api_version, credentials=credentials)
+        self.youtube = googleapiclient.discovery.build(self.api_service_name, self.api_version, credentials=credentials)
 
-    def upload_video(self, clip):
-        pass
+    def upload_video(self, file_path, video_content):
+        body = dict(
+            snippet=dict(
+                title=video_content.title,
+                description=video_content.description,
+                tags=video_content.tags,
+                categoryId=video_content.category_id
+            ),
+            status=dict(
+                privacyStatus=video_content.privacy_status
+            )
+        )
+
+        insert_request = self.youtube.videos().insert(
+            part=",".join(body.keys()),
+            body=body,
+            media_body= MediaFileUpload(
+                file_path, chunksize=-1, resumable=True)
+        )
+
+        self.resumable_upload(insert_request)
+
+    def resumable_upload(self, insert_request):
+        response = None
+        error = None
+        retry = 0
+        while response is None:
+            try:
+                print("Uploading file...")
+                status, response = insert_request.next_chunk()
+                if response is not None:
+                    if 'id' in response:
+                        print("Video id '%s' was successfully uploaded." % response['id'])
+                    else:
+                        exit("The upload failed with an unexpected response: %s" % response)
+            except HttpError as e:
+                if e.resp.status in self.__RETRIABLE_STATUS_CODES:
+                    error = f"A retriable HTTP error {e.resp.status} occurred:\n{e.content}"
+                else:
+                    raise
+            except self.__RETRIABLE_EXCEPTIONS as e:
+                error = f"A retriable error occurred: {e}"
+
+            if error is not None:
+                print(error)
+                retry += 1
+                if retry > self.__MAX_RETRIES:
+                    exit("No longer attempting to retry.")
+
+                max_sleep = 2 ** retry
+                sleep_seconds = random.random() * max_sleep
+                print(f"Sleeping {sleep_seconds} seconds and then retrying...")
+                time.sleep(sleep_seconds)
+
+if __name__ == "__main__":
+    video_content = VideoContent('test video', 'test description', ['test', 'video'], 'private')
+
+    # upload videocsgo.mp4 to youtube
+    uploader = YoutubeUploader()
+    uploader.get_authenticated_service()
+    uploader.upload_video("videocsgo.mp4", video_content)
+
