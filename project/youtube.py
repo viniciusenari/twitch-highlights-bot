@@ -2,6 +2,8 @@ import os
 import random
 import time
 
+from video_content import VideoContent, VideoContentGenerator
+
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 from googleapiclient.errors import HttpError
@@ -9,16 +11,7 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 
 scopes = ["https://www.googleapis.com/auth/youtube.upload"]
-
-
-class VideoContent:
-
-    def __init__(self, title, description, tags, privacy_status):
-        self.title = None
-        self.description = None
-        self.tags = None
-        self.category_id = None
-        self.privacy_status = None
+      
 
 class YoutubeUploader:
 
@@ -89,9 +82,9 @@ class YoutubeUploader:
                 time.sleep(sleep_seconds)
 
 if __name__ == "__main__":
-    video_content = VideoContent('test video', 'test description', ['test', 'video'], 'private')
+    video_content = VideoContent('test video', 'test description', ['test', 'video'], '20', 'private')
+    print(video_content.title, video_content.description, video_content.tags, video_content.category_id, video_content.privacy_status)
 
-    # upload videocsgo.mp4 to youtube
     uploader = YoutubeUploader()
     uploader.get_authenticated_service()
     uploader.upload_video("videocsgo.mp4", video_content)
