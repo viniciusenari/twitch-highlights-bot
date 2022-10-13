@@ -53,6 +53,7 @@ class ClipsExtractor:
                         clip['duration'],
                         f'files/clips/{clip["title"].replace(" ", "_").replace("/","_").lower()}.mp4'
                     ))
+                    if len(self.clips_content) == quantity: break
             params['after'] = response['pagination']['cursor']
 
 class ClipDownloader():
@@ -76,3 +77,13 @@ class ClipDownloader():
             print(f'Downloading clip {i+1}/{len(clips_extractor.clips_content)}')
             clip = clips_extractor.clips_content[i]
             self.download_clip(clip)
+            self.download_thumbnail(clip)
+    
+    def download_thumbnail(self, clip):
+        r = requests.get(clip.thumbnail_url)
+        if not os.path.exists('files/thumbnails'): os.makedirs('files/thumbnails')
+        try:
+            with open(f'files/thumbnails/{clip.title.replace(" ", "_").replace("/","_").lower()}.jpg', 'wb') as f:
+                f.write(r.content)
+        except:
+            print(f'Failed to download thumbnail: {clip.thumbnail_url}')
