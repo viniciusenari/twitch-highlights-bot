@@ -1,4 +1,8 @@
 from twitch_ids_box_art import games_name
+from PIL import Image, ImageDraw, ImageFont
+from config import font_thumbnail
+from math import floor, sqrt
+import os
 
 class VideoContent:
 
@@ -16,7 +20,7 @@ class VideoContentGenerator:
 
     def generate_title(self):
         if self.clips_extractor.by_game:
-            return f'Top {len(self.clips_extractor.clips_content)} most watched {games_name[self.clips_extractor.clips_content[0].game_id]} Twitch clips this week'
+            return f'Top {len(self.clips_extractor.clips_content)} most watched {games_name[self.clips_extractor.clips_content[0].game_id]} Twitch clips last week'
         return f'Top {len(self.clips_extractor.clips_content)} {self.clips_extractor.clips_content[0].broadcaster_id} highlights of the week'
 
     def generate_description(self):
@@ -24,21 +28,42 @@ class VideoContentGenerator:
         
         timestamp = 0
         for clip in self.clips_extractor.clips_content:
-            description += f'{timestamp} - {clip.title}({clip.url})\n'
-            timestamp += clip.duration
+            description += f'{timestamp // 60}:{timestamp % 60:02d} - {clip.title} ({clip.url})\n'
+            timestamp += int(clip.duration)
 
         return description
 
     def generate_tags(self):
-        tags = ['twitch', 'clips', 'highlights', 'livestreaming', 'streaming', 'stream highlights', 'stream clips', 'streaming clips', 'streaming highlights', 'twitch clips', 'twitch highlights', 'twitch streaming', 'twitch stream highlights', 'twitch stream clips', 'twitch streaming clips', 'twitch streaming highlights']
-        if self.clips_extractor.by_game:
-            tags.append(self.clips_extractor.clips_content[0].broadcaster_name)
-        else:
-            tags.append(games_name[self.clips_extractor.clips_content[0].game_id])
+        tags = set(['twitch', 'clips', 'highlights', 'livestreaming', 'streaming', 'stream highlights', 'stream clips', 'streaming clips', 'streaming highlights', 'twitch clips', 'twitch highlights', 'twitch streaming', 'twitch stream highlights', 'twitch stream clips', 'twitch streaming clips', 'twitch streaming highlights'])
             
         for clip in self.clips_extractor.clips_content:
-            if self.clips_extractor.by_game:
-                tags.append(clip.broadcaster_name)
-            else:
-                tags.append(games_name[clip.game_id])
+            tags.add(games_name[clip.game_id])
+            tags.add(clip.broadcaster_name)
         return tags
+    
+    def generate_thumbnail(self):
+        overlay = Image.new('RGBA', (1920, 1080), color = (255,255,255,0))
+        d = ImageDraw.Draw(overlay)
+
+        # Generate background with thumbnail images
+        x = floor(sqrt(len(self.clips_extractor.clips_content)))
+        for i in range(x):
+            for j in range(x):
+                img = Image.open(f'files/thumbnails/{self.clips_extractor.clips_content[i * 3 + j].title.replace(" ", "_").replace("/","_").lower()}.jpg')
+                img = img.resize((640, 360))
+                overlay.paste(img, (i * 640, j * 360))
+
+        # Generate text
+        line1 = f'Top {len(self.clips_extractor.clips_content)}'
+        line2 = f'{games_name[self.clips_extractor.clips_content[0].game_id]}'
+        line3 = 'Twitch clips'
+
+        _, _, w, h = d.textbbox((0, 0), line1, font = ImageFont.truetype(font_thumbnail, 120))
+        d.text(((1920 - w)/ 2, (1080 - h) / 2 - 120), line1, font=ImageFont.truetype(font_thumbnail, 120), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+        _, _, w, h = d.textbbox((0, 0), line2, font = ImageFont.truetype(font_thumbnail, 90))
+        d.text(((1920 - w)/ 2, (1080 - h) / 2), line2, font = ImageFont.truetype(font_thumbnail, 90), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+        _, _, w, h = d.textbbox((0, 0), line3, font = ImageFont.truetype(font_thumbnail, 90))
+        d.text(((1920 - w)/ 2, (1080 - h) / 2 + 120), line3, font = ImageFont.truetype(font_thumbnail, 90), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+
+        if not os.path.exists('files/youtube'): os.makedirs('files/youtube')
+        overlay.save(f'files/youtube/thumbnail.png')
