@@ -1,7 +1,7 @@
 import requests
 import os
 from twitch_api import TwitchAPI
-from utils import client_id, client_secret, prev_week_saturday, prev_week_sunday
+from utils import client_id, client_secret, prev_week_saturday_rfc, prev_week_sunday_rfc
 from twitch_ids_box_art import games_id
 
 api = TwitchAPI()
@@ -33,8 +33,8 @@ class ClipsExtractor:
             'broadcaster_id' : broadcaster_id,
             'game_id' : game_id,
             'first' : quantity,
-            'started_at' : prev_week_sunday,
-            'ended_at' : prev_week_saturday,
+            'started_at' : prev_week_sunday_rfc,
+            'ended_at' : prev_week_saturday_rfc,
             'after' : None
         }
 
@@ -56,7 +56,7 @@ class ClipsExtractor:
                     if len(self.clips_content) == quantity: break
             params['after'] = response['pagination']['cursor']
 
-class ClipDownloader():
+class ClipsDownloader():
     def __init__(self):
         pass
 
@@ -72,10 +72,10 @@ class ClipDownloader():
         else:
             print(f'Failed to download clip from thumb: {clip.thumbnail_url}')
     
-    def download_top_clips(self, clips_extractor):
-        for i in range(len(clips_extractor.clips_content)):
-            print(f'Downloading clip {i+1}/{len(clips_extractor.clips_content)}')
-            clip = clips_extractor.clips_content[i]
+    def download_top_clips(self, clips):
+        for i in range(len(clips)):
+            print(f'Downloading clip {i+1}/{len(clips)}')
+            clip = clips[i]
             self.download_clip(clip)
             self.download_thumbnail(clip)
     
