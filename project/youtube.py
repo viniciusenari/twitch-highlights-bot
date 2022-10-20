@@ -26,6 +26,15 @@ class YoutubeUploader:
         flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(self.client_secrets_file, scopes)
         credentials = flow.run_console()
         self.youtube = googleapiclient.discovery.build(self.api_service_name, self.api_version, credentials=credentials)
+    
+    def upload_thumbnail(self, video_id, file_path):
+        print('Uploading thumbnail...')
+        request = self.youtube.thumbnails().set(
+            videoId=video_id,
+            media_body=file_path
+        )
+        response = request.execute()
+        print(response)
 
     def upload_video(self, file_path, video_content):
         body = dict(
@@ -47,7 +56,8 @@ class YoutubeUploader:
                 file_path, chunksize=-1, resumable=True)
         )
 
-        self.resumable_upload(insert_request)
+        video_id = self.resumable_upload(insert_request)
+        self.upload_thumbnail(video_id, 'files/youtube/thumbnail.png')
 
     def resumable_upload(self, insert_request):
         response = None
@@ -60,6 +70,7 @@ class YoutubeUploader:
                 if response is not None:
                     if 'id' in response:
                         print("Video id '%s' was successfully uploaded." % response['id'])
+                        return response['id']
                     else:
                         exit("The upload failed with an unexpected response: %s" % response)
             except HttpError as e:
