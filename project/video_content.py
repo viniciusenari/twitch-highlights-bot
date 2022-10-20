@@ -54,8 +54,8 @@ from {prev_week_sunday_dBY} to {prev_week_saturday_dBY}. \n \nClips:\n'
         for i in range(x):
             for j in range(x):
                 img = Image.open(f'files/thumbnails/{self.clips_extractor.clips_content[i * 3 + j].title.replace(" ", "_").replace("/","_").lower()}.jpg')
-                img = img.resize((640, 360))
-                overlay.paste(img, (i * 640, j * 360))
+                img = img.resize((1920 / x, 1080 / x))
+                overlay.paste(img, (i * (1920 / x), j * (1080 / x)))
 
         # Generate text
         line1 = f'Top {len(self.clips_extractor.clips_content)}'
