@@ -2,6 +2,7 @@ from twitch_ids_box_art import games_name
 from PIL import Image, ImageDraw, ImageFont
 from config import font_thumbnail
 from math import floor, sqrt
+from utils import prev_week_saturday_dBY, prev_week_sunday_dBY
 import os
 
 class VideoContent:
@@ -20,17 +21,20 @@ class VideoContentGenerator:
 
     def generate_title(self):
         if self.clips_extractor.by_game:
-            return f'Top {len(self.clips_extractor.clips_content)} most watched {games_name[self.clips_extractor.clips_content[0].game_id]} Twitch clips last week'
-        return f'Top {len(self.clips_extractor.clips_content)} {self.clips_extractor.clips_content[0].broadcaster_id} highlights of the week'
+            return f'Top {len(self.clips_extractor.clips_content)} Most Watched {games_name[self.clips_extractor.clips_content[0].game_id]} Twitch Clips of The Week'
+        return f'Top {len(self.clips_extractor.clips_content)} {self.clips_extractor.clips_content[0].broadcaster_id}\'s highlights of the week'
 
     def generate_description(self):
-        description = ''
+        description = f'Top {len(self.clips_extractor.clips_content)} most watched {games_name[self.clips_extractor.clips_content[0].game_id]} Twitch clips \
+from {prev_week_sunday_dBY} to {prev_week_saturday_dBY}. \n \nClips:\n'
         
         timestamp = 0
         for clip in self.clips_extractor.clips_content:
             description += f'{timestamp // 60}:{timestamp % 60:02d} - {clip.title} ({clip.url})\n'
             timestamp += int(clip.duration)
 
+        description += '\nAll clips in this video were automatically selected based on their popularity. This video was generated and uploaded using a Python script. \
+\nCheck out the source code here: https://github.com/viniciusenari/automated-twitch-clips-youtube-channel, leave a star if you liked it!'
         return description
 
     def generate_tags(self):
@@ -39,7 +43,7 @@ class VideoContentGenerator:
         for clip in self.clips_extractor.clips_content:
             tags.add(games_name[clip.game_id])
             tags.add(clip.broadcaster_name)
-        return tags
+        return list(tags)
     
     def generate_thumbnail(self):
         overlay = Image.new('RGBA', (1920, 1080), color = (255,255,255,0))
