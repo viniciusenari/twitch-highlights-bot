@@ -46,28 +46,28 @@ from {prev_week_sunday_dBY} to {prev_week_saturday_dBY}. \n \nLanguages: {self.c
         return list(tags)
     
     def generate_thumbnail(self):
-        overlay = Image.new('RGBA', (1920, 1080), color = (255,255,255,0))
+        overlay = Image.new('RGBA', (1280, 720), color = (255,255,255,0))
         d = ImageDraw.Draw(overlay)
 
         # Generate background with thumbnail images
         x = floor(sqrt(len(self.clips_extractor.clips_content)))
         for i in range(x):
             for j in range(x):
-                img = Image.open(f'files/thumbnails/{self.clips_extractor.clips_content[i * 3 + j].title.replace(" ", "_").replace("/","_").lower()}.jpg')
-                img = img.resize((1920 // x, 1080 // x))
-                overlay.paste(img, (i * (1920 // x), j * (1080 // x)))
+                img = Image.open(f'files/thumbnails/{self.clips_extractor.clips_content[i * x + j].title.replace(" ", "_").replace("/","_").lower()}.jpg')
+                img = img.resize((1280 // x, 720 // x))
+                overlay.paste(img, (i * (1280 // x), j * (720 // x)))
 
         # Generate text
         line1 = f'Top {len(self.clips_extractor.clips_content)}'
         line2 = f'{games_name[self.clips_extractor.clips_content[0].game_id]}'
         line3 = 'Twitch clips'
 
-        _, _, w, h = d.textbbox((0, 0), line1, font = ImageFont.truetype(font_thumbnail, 120))
-        d.text(((1920 - w)/ 2, (1080 - h) / 2 - 120), line1, font=ImageFont.truetype(font_thumbnail, 120), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
-        _, _, w, h = d.textbbox((0, 0), line2, font = ImageFont.truetype(font_thumbnail, 90))
-        d.text(((1920 - w)/ 2, (1080 - h) / 2), line2, font = ImageFont.truetype(font_thumbnail, 90), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
-        _, _, w, h = d.textbbox((0, 0), line3, font = ImageFont.truetype(font_thumbnail, 90))
-        d.text(((1920 - w)/ 2, (1080 - h) / 2 + 120), line3, font = ImageFont.truetype(font_thumbnail, 90), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+        _, _, w, h = d.textbbox((0, 0), line1, font = ImageFont.truetype(font_thumbnail, 80))
+        d.text(((1280 - w)/ 2, (720 - h) / 2 - 100), line1, font=ImageFont.truetype(font_thumbnail, 80), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+        _, _, w, h = d.textbbox((0, 0), line2, font = ImageFont.truetype(font_thumbnail, 60))
+        d.text(((1280 - w)/ 2, (720 - h) / 2), line2, font = ImageFont.truetype(font_thumbnail, 60), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+        _, _, w, h = d.textbbox((0, 0), line3, font = ImageFont.truetype(font_thumbnail, 70))
+        d.text(((1280 - w)/ 2, (720 - h) / 2 + 100), line3, font = ImageFont.truetype(font_thumbnail, 70), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
 
         if not os.path.exists('files/youtube'): os.makedirs('files/youtube')
         overlay.save(f'files/youtube/thumbnail.png')
