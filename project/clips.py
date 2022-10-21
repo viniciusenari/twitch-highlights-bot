@@ -29,6 +29,7 @@ class ClipsExtractor:
 
     def get_clips(self, quantity = 10, broadcaster_id = None, game_id = None, languages = []):
         self.by_game = True if game_id else False
+        self.languages = languages
         params = {
             'broadcaster_id' : broadcaster_id,
             'game_id' : game_id,
