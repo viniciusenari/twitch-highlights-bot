@@ -26,7 +26,7 @@ class VideoContentGenerator:
 
     def generate_description(self):
         description = f'Top {len(self.clips_extractor.clips_content)} most watched {games_name[self.clips_extractor.clips_content[0].game_id]} Twitch clips \
-from {prev_week_sunday_dBY} to {prev_week_saturday_dBY}. \n \nClips:\n'
+from {prev_week_sunday_dBY} to {prev_week_saturday_dBY}. \n \nLanguages: {self.clips_extractor.languages if self.clips_extractor.languages else "All"} \n \nClips:\n'
         
         timestamp = 0
         for clip in self.clips_extractor.clips_content:
@@ -54,8 +54,8 @@ from {prev_week_sunday_dBY} to {prev_week_saturday_dBY}. \n \nClips:\n'
         for i in range(x):
             for j in range(x):
                 img = Image.open(f'files/thumbnails/{self.clips_extractor.clips_content[i * 3 + j].title.replace(" ", "_").replace("/","_").lower()}.jpg')
-                img = img.resize((1920 / x, 1080 / x))
-                overlay.paste(img, (i * (1920 / x), j * (1080 / x)))
+                img = img.resize((1920 // x, 1080 // x))
+                overlay.paste(img, (i * (1920 // x), j * (1080 // x)))
 
         # Generate text
         line1 = f'Top {len(self.clips_extractor.clips_content)}'
