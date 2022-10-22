@@ -28,11 +28,11 @@ class VideoEditor():
         d.text((100, 1000), broadcaster_name, font=fnt_streamer_name, stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
         
         if not os.path.exists('files/overlays'): os.makedirs('files/overlays')
-        overlay.save(f'files/overlays/{clip_content.title}.png')
+        overlay.save(f'files/overlays/{clip_content.title.replace(" ", "_").replace("/","_").lower()}.png')
     
     def create_video(self, clip_content):
         clip = VideoFileClip(clip_content.path, target_resolution=(1080, 1980))
-        img_clip = ImageClip(f'files/overlays/{clip_content.title}.png').set_duration(5)
+        img_clip = ImageClip(f'files/overlays/{clip_content.title.replace(" ", "_").replace("/","_").lower()}.png').set_duration(5)
         video = CompositeVideoClip([clip, img_clip])
         return video
 
