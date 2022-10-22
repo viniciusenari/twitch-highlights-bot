@@ -60,14 +60,22 @@ from {prev_week_sunday_dBY} to {prev_week_saturday_dBY}. \n \nLanguages: {self.c
         # Generate text
         line1 = f'Top {len(self.clips_extractor.clips_content)}'
         line2 = f'{games_name[self.clips_extractor.clips_content[0].game_id]}'
-        line3 = 'Twitch clips'
+        line3 = 'Twitch Clips'
 
-        _, _, w, h = d.textbbox((0, 0), line1, font = ImageFont.truetype(font_thumbnail, 80))
-        d.text(((1280 - w)/ 2, (720 - h) / 2 - 100), line1, font=ImageFont.truetype(font_thumbnail, 80), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
-        _, _, w, h = d.textbbox((0, 0), line2, font = ImageFont.truetype(font_thumbnail, 60))
-        d.text(((1280 - w)/ 2, (720 - h) / 2), line2, font = ImageFont.truetype(font_thumbnail, 60), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
-        _, _, w, h = d.textbbox((0, 0), line3, font = ImageFont.truetype(font_thumbnail, 70))
-        d.text(((1280 - w)/ 2, (720 - h) / 2 + 100), line3, font = ImageFont.truetype(font_thumbnail, 70), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+        # rename games with long names to fit in the thumbnail
+        rename = {
+            'Counter-Strike: Global Offensive': 'CSGO',
+            'League of Legends': 'LOL',
+        }
+
+        if line2 in rename: line2 = rename[line2]
+
+        _, _, w, h = d.textbbox((0, 0), line1, font = ImageFont.truetype(font_thumbnail, 100))
+        d.text(((1280 - w)/ 2, (720 - h) / 2 - 130), line1, font=ImageFont.truetype(font_thumbnail, 100), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+        _, _, w, h = d.textbbox((0, 0), line2, font = ImageFont.truetype(font_thumbnail, 130))
+        d.text(((1280 - w)/ 2, (720 - h) / 2), line2, font = ImageFont.truetype(font_thumbnail, 130), stroke_width=4, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+        _, _, w, h = d.textbbox((0, 0), line3, font = ImageFont.truetype(font_thumbnail, 100))
+        d.text(((1280 - w)/ 2, (720 - h) / 2 + 140), line3, font = ImageFont.truetype(font_thumbnail, 100), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
 
         if not os.path.exists('files/youtube'): os.makedirs('files/youtube')
         overlay.save(f'files/youtube/thumbnail.png')
