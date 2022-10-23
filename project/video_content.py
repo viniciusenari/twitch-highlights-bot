@@ -71,7 +71,7 @@ from {prev_week_sunday_dBY} to {prev_week_saturday_dBY}. \n \nLanguages: {self.c
         if line2 in rename: line2 = rename[line2]
 
         _, _, w, h = d.textbbox((0, 0), line1, font = ImageFont.truetype(font_thumbnail, 100))
-        d.text(((1280 - w)/ 2, (720 - h) / 2 - 130), line1, font=ImageFont.truetype(font_thumbnail, 100), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
+        d.text(((1280 - w)/ 2, (720 - h) / 2 - 120), line1, font=ImageFont.truetype(font_thumbnail, 100), stroke_width=3, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
         _, _, w, h = d.textbbox((0, 0), line2, font = ImageFont.truetype(font_thumbnail, 130))
         d.text(((1280 - w)/ 2, (720 - h) / 2), line2, font = ImageFont.truetype(font_thumbnail, 130), stroke_width=4, stroke_fill=(0, 0, 0), fill=(255, 255, 255))
         _, _, w, h = d.textbbox((0, 0), line3, font = ImageFont.truetype(font_thumbnail, 100))
