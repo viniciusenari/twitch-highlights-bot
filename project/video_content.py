@@ -35,7 +35,11 @@ from {prev_week_sunday_dBY} to {prev_week_saturday_dBY}. \n \nLanguages: {self.c
 
         description += '\nAll clips in this video were automatically selected based on their popularity. This video was generated and uploaded using a Python script. \
 \nCheck out the source code here: https://github.com/viniciusenari/automated-twitch-clips-youtube-channel, leave a star if you liked it!'
-        return description
+
+        # remove greather than and less than symbols from description to avoid errors
+        description = description.replace('<', '').replace('>', '')
+
+        return description.replace('<', '').replace('>', '')
 
     def generate_tags(self):
         tags = set(['twitch', 'clips', 'highlights', 'livestreaming', 'streaming', 'stream highlights', 'stream clips', 'streaming clips', 'streaming highlights', 'twitch clips', 'twitch highlights', 'twitch streaming', 'twitch stream highlights', 'twitch stream clips', 'twitch streaming clips', 'twitch streaming highlights'])
