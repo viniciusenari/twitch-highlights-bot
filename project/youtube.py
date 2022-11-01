@@ -1,8 +1,9 @@
 import os
 import random
 import time
+import httplib2
 
-from video_content import VideoContent, VideoContentGenerator
+from video_content import VideoContent
 
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
@@ -12,6 +13,10 @@ from googleapiclient.http import MediaFileUpload
 
 scopes = ["https://www.googleapis.com/auth/youtube.upload"]
       
+
+RETRIABLE_STATUS_CODES = [500, 502, 503, 504]
+RETRIABLE_EXCEPTIONS = (httplib2.HttpLib2Error)
+MAX_RETRIES = 10
 
 class YoutubeUploader:
 
@@ -74,17 +79,17 @@ class YoutubeUploader:
                     else:
                         exit("The upload failed with an unexpected response: %s" % response)
             except HttpError as e:
-                if e.resp.status in self.__RETRIABLE_STATUS_CODES:
+                if e.resp.status in RETRIABLE_STATUS_CODES:
                     error = f"A retriable HTTP error {e.resp.status} occurred:\n{e.content}"
                 else:
                     raise
-            except self.__RETRIABLE_EXCEPTIONS as e:
+            except RETRIABLE_EXCEPTIONS as e:
                 error = f"A retriable error occurred: {e}"
 
             if error is not None:
                 print(error)
                 retry += 1
-                if retry > self.__MAX_RETRIES:
+                if retry > MAX_RETRIES:
                     exit("No longer attempting to retry.")
 
                 max_sleep = 2 ** retry
