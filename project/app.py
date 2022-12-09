@@ -17,7 +17,7 @@ class App:
         print(f"Creating video compilation with game: {game}, amount: {amount}, languages: {languages}")
         game_id = games_id[game]
 
-        # # Get clips from Twitch
+        # Get clips from Twitch
         self.clips_extractor.get_clips(quantity = amount, game_id = game_id, languages=languages)
         clips = self.clips_extractor.clips_content
             
@@ -31,7 +31,7 @@ class App:
         # Upload video to Youtube
         self.video_content_generator = VideoContentGenerator(self.clips_extractor)
 
-        # # Create video content
+        # Create video content
         video_content = VideoContent(
             title = self.video_content_generator.generate_title(),
             description = self.video_content_generator.generate_description(),
@@ -40,10 +40,13 @@ class App:
             privacy_status= 'public'
         )
 
-        # # Create thumbnail
+        # Create thumbnail
         self.video_content_generator.generate_thumbnail()
 
         # # Upload video to Youtube
-        self.youtube_uploader.get_authenticated_service()
-        self.youtube_uploader.upload_video('files/youtube/video.mp4', video_content)
+        # self.youtube_uploader.get_authenticated_service()
+        # self.youtube_uploader.upload_video('files/youtube/video.mp4', video_content)
 
+if __name__ == "__main__":
+    app = App()
+    app.run('Overwatch 2', 10, languages=['en', 'en-gb'])
