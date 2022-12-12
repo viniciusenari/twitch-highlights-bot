@@ -1,6 +1,6 @@
-font_clip_name = "usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-font_broadcaster = "usr/share/fonts/truetype/noto/NotoMono-Regular.ttf"
-font_thumbnail = "usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+font_clip_name = "fonts/NotoSans-Black.ttf"
+font_broadcaster = "fonts/NotoSans-Bold.ttf"
+font_thumbnail = "fonts/NotoSans-Black.ttf"
 
 
 # Rendering settings
