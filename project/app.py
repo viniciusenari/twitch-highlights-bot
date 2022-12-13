@@ -1,9 +1,8 @@
-from calendar import c
-from clips import ClipsExtractor, ClipsDownloader
-from video_edit import VideoEditor
-from video_content import VideoContentGenerator, VideoContent
-from youtube import YoutubeUploader
-from twitch_ids_box_art import games_id
+from project.clips import ClipsExtractor, ClipsDownloader
+from project.video_edit import VideoEditor
+from project.video_content import VideoContentGenerator, VideoContent
+from project.youtube import YoutubeUploader
+from project.twitch_ids_box_art import games_id
 
 
 class App:
@@ -43,10 +42,6 @@ class App:
         # Create thumbnail
         self.video_content_generator.generate_thumbnail()
 
-        # # Upload video to Youtube
-        # self.youtube_uploader.get_authenticated_service()
-        # self.youtube_uploader.upload_video('files/youtube/video.mp4', video_content)
-
-if __name__ == "__main__":
-    app = App()
-    app.run('Overwatch 2', 10, languages=['en', 'en-gb'])
+        # Upload video to Youtube
+        self.youtube_uploader.get_authenticated_service()
+        self.youtube_uploader.upload_video('files/youtube/video.mp4', video_content)

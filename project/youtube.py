@@ -3,7 +3,7 @@ import random
 import time
 import httplib2
 
-from video_content import VideoContent
+from project.video_content import VideoContent
 
 import google_auth_oauthlib.flow
 import googleapiclient.discovery

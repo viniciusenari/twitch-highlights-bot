@@ -1,9 +1,9 @@
-from twitch_ids_box_art import games_name
-from PIL import Image, ImageDraw, ImageFont
-from config import font_thumbnail
-from math import floor, sqrt
-from utils import prev_week_saturday_dBY, prev_week_sunday_dBY
 import os
+from PIL import Image, ImageDraw, ImageFont
+from project.config import font_thumbnail
+from math import floor, sqrt
+from project.twitch_ids_box_art import games_name
+from project.utils import prev_week_saturday_dBY, prev_week_sunday_dBY
 
 class VideoContent:
 

@@ -1,9 +1,7 @@
 import os
 from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips
 from PIL import Image, ImageDraw, ImageFont
-from clips import ClipsExtractor
-from twitch_ids_box_art import games_id
-from config import font_clip_name, font_broadcaster, render_settings
+from project.config import font_clip_name, font_broadcaster, render_settings
 
 class VideoEditor():
     def __init__(self):

@@ -1,8 +1,8 @@
 import requests
 import os
-from twitch_api import TwitchAPI
-from utils import client_id, client_secret, prev_week_saturday_rfc, prev_week_sunday_rfc
-from twitch_ids_box_art import games_id
+from project.twitch_api import TwitchAPI
+from project.utils import client_id, client_secret, prev_week_saturday_rfc, prev_week_sunday_rfc
+from project.twitch_ids_box_art import games_id
 
 api = TwitchAPI()
 api.auth(client_id, client_secret)

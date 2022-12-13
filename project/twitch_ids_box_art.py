@@ -1,6 +1,6 @@
 import requests
-from twitch_api import TwitchAPI
-from utils import client_id, client_secret
+from project.twitch_api import TwitchAPI
+from project.utils import client_id, client_secret
 
 api = TwitchAPI()
 api.auth(client_id, client_secret)
