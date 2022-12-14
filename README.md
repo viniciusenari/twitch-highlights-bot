@@ -7,13 +7,15 @@
 
 Welcome to the Twitch Highlights Bot!
 
-This Python bot utilizes the Twitch API to retrieve the most viewed clips from a selected game of the week, creates a video compilation of these clips using MoviePy, and then uploads the compilation to YouTube with an automatically generated title, description, and thumbnail. With this bot, you can easily keep up with the most popular clips on Twitch and share them with others on YouTube.
+This Python bot utilizes the Twitch API to retrieve the most viewed clips from a selected game of the week, creates a video compilation of these clips using MoviePy, and then uploads the compilation to YouTube with an automatically generated title, description, and thumbnail. With this bot, you can easily keep up with the most popular clips on Twitch and share them with others on YouTube.  
+Here is the [Youtube channel](https://www.youtube.com/@mostwatchedtwitchclips) that I set up to test this bot.
 ![Youtube Channel](https://i.imgur.com/blU5A32.png)
+
 
 ## 🎥 Features
 - Get the specified number of most watched clips of the week. Download the clips and create a video compilation.
 - Add an on-screen text to the video compilation with the clip's and broadcaster's names.
-- Upload the video compilation to YouTube with an automatically generated title, description, and thumbnail.
+- Upload the video compilation to YouTube with an automatically generated title, description, thumbnail and tags.
 
 ## 📋 Prerequisites
 Before you begin, ensure you have met the following requirements:
