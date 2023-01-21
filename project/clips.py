@@ -13,7 +13,6 @@ class ClipContent:
         self.broadcaster_id = broadcaster_id
         self.broadcaster_name = broadcaster_name
         self.game_id = game_id
-        self.creator_name = creator_name
         self.title = title
         self.thumbnail_url = thumbnail_url
         self.duration = duration
@@ -48,7 +47,6 @@ class ClipsExtractor:
                         clip['broadcaster_id'],
                         clip['broadcaster_name'],
                         clip['game_id'],
-                        clip['creator_name'],
                         clip['title'],
                         clip['thumbnail_url'],
                         clip['duration'],
