@@ -97,11 +97,3 @@ class YoutubeUploader:
                 print(f"Sleeping {sleep_seconds} seconds and then retrying...")
                 time.sleep(sleep_seconds)
 
-if __name__ == "__main__":
-    video_content = VideoContent('test video', 'test description', ['test', 'video'], '20', 'private')
-    print(video_content.title, video_content.description, video_content.tags, video_content.category_id, video_content.privacy_status)
-
-    uploader = YoutubeUploader()
-    uploader.get_authenticated_service()
-    uploader.upload_video("videocsgo.mp4", video_content)
-
