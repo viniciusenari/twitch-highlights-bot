@@ -8,7 +8,7 @@ api = TwitchAPI()
 api.auth(client_id, client_secret)
 
 class ClipContent:
-    def __init__(self, url, broadcaster_id, broadcaster_name, game_id, creator_name, title, thumbnail_url, duration, path):
+    def __init__(self, url, broadcaster_id, broadcaster_name, game_id, title, thumbnail_url, duration, path):
         self.url = url
         self.broadcaster_id = broadcaster_id
         self.broadcaster_name = broadcaster_name
