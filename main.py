@@ -12,6 +12,8 @@ class TwitchVideoCompiler:
         parser.add_argument('-l', '--languages', help='Languages', nargs='+', required=False)
         args = parser.parse_args()
 
+        args.languages = args.languages or []
+
         app = App()
         app.run(args.game, int(args.amount), args.languages)
     
