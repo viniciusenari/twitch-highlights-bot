@@ -1,5 +1,8 @@
+import time
 import requests
 import os
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from project.twitch_api import TwitchAPI
 from project.utils import client_id, client_secret, prev_week_saturday_rfc, prev_week_sunday_rfc
 from project.twitch_ids_box_art import games_id
@@ -19,7 +22,7 @@ class ClipContent:
         self.path = path
     
     def __str__(self):
-        return f'url: {self.url}\nbroadcaster_id: {self.broadcaster_id}\nbroadcaster_name: {self.broadcaster_name}\ncreator_name: {self.creator_name}\ntitle: {self.title}\nthumbnail_url: {self.thumbnail_url}'
+        return f'url: {self.url}\nbroadcaster_id: {self.broadcaster_id}\nbroadcaster_name: {self.broadcaster_name}\ngame_id: {self.game_id}\ntitle: {self.title}\nthumbnail_url: {self.thumbnail_url}'
 
 class ClipsExtractor:
     def __init__(self):
@@ -59,7 +62,27 @@ class ClipsDownloader():
     def __init__(self):
         pass
 
-    def download_clip(self, clip):
+    def download_clip_driver(self, clip):
+        option = Options()
+        option.headless = True
+        driver = webdriver.Chrome(options=option)
+        driver.get(clip.url)
+        time.sleep(1)  # Allow the page to load
+
+        clip_url = driver.find_element("xpath", "//div[@class='Layout-sc-1xcs6mc-0 video-ref']//video").get_property("src")
+        driver.quit()
+        r = requests.get(clip_url)
+
+        if r.headers['Content-Type'] == 'binary/octet-stream' or r.headers['Content-Type'] == 'video/mp4':
+            if not os.path.exists('files/clips'):
+                os.makedirs('files/clips')
+
+            with open(clip.path, 'wb') as f:
+                f.write(r.content)
+        else:
+            print(f'Failed to download clip from thumb: {clip.thumbnail_url}')
+
+    def download_clip_thumb(self, clip):
         index = clip.thumbnail_url.find('-preview')
         clip_url = clip.thumbnail_url[:index] + '.mp4'
 
@@ -75,7 +98,10 @@ class ClipsDownloader():
         for i in range(len(clips)):
             print(f'Downloading clip {i+1}/{len(clips)}')
             clip = clips[i]
-            self.download_clip(clip)
+            if clip.thumbnail_url.find('clips-media-assets2.twitch.tv') != -1:
+                self.download_clip_thumb(clip)
+            else:
+                self.download_clip_driver(clip)
             self.download_thumbnail(clip)
     
     def download_thumbnail(self, clip):
