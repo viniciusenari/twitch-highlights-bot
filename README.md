@@ -24,6 +24,7 @@ Before you begin, ensure you have met the following requirements:
 - A Twitch account and a google account.
 - A registered application on [dev.twitch.tv](https://dev.twitch.tv/console) with a Twitch API Client ID and Client Secret
 - A project created on [Google Cloud](https://cloud.google.com/) and downloaded a json file with the credentials.
+- Chrome WebDriver for Selenium
 
 If you need help getting credentials from Twitch or Google, you may check the following guides:
 - [Twitch API](https://dev.twitch.tv/docs/authentication/register-app)
